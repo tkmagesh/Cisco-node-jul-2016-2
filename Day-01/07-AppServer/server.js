@@ -20,7 +20,7 @@ var server = http.createServer(function(req, res){
 			return;
 		}
 		fs.createReadStream(resourcePath).pipe(res);
-	} else if (urlObj.pathname === '/calculator'){
+	} else if (urlObj.pathname === '/calculator' && req.method === 'GET'){
 		var data = qs.parse(urlObj.query),
 			op = data.op,
 			n1 = parseInt(data.n1, 10),
@@ -28,6 +28,20 @@ var server = http.createServer(function(req, res){
 		var result = calculator[op](n1, n2);
 		res.write(result.toString());
 		res.end();
+	} else if (urlObj.pathname === '/calculator' && req.method === 'POST'){
+		 var reqData = '';
+		 req.on('data', function(chunk){
+		 	reqData += chunk;
+		 });
+		 req.on('end', function(){
+		 	var data = qs.parse(reqData),
+				op = data.op,
+				n1 = parseInt(data.n1, 10),
+				n2 = parseInt(data.n2, 10);
+			var result = calculator[op](n1, n2);
+			res.write(result.toString());
+			res.end();
+		 })
 	} else {
 		res.statusCode = 404;
 		res.end();
