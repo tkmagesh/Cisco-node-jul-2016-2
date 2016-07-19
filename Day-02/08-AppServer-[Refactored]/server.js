@@ -4,15 +4,11 @@ var staticServer = require('./staticServer');
 var calculatorHandler = require('./calculatorHandler');
 var notFoundHandler = require('./notFoundHandler');
 var dataParser = require('./dataParser');
+var app = require('./app');
 
-var server = http.createServer(function(req, res){
-	console.log(req.url);
-	dataParser(req, res);
-	staticServer(req, res);
-	calculatorHandler(req, res);
-	notFoundHandler(req, res);
-});
+app.use(dataParser);
+app.use(staticServer);
+app.use(calculatorHandler);
+app.use(notFoundHandler);
 
-server.listen(8080);
-
-///calculator?op=add&n1=100&n2=200
+http.createServer(app).listen(8080);
